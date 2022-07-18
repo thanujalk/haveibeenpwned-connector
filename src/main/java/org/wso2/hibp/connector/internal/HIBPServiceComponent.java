@@ -24,6 +24,9 @@ import org.eclipse.equinox.http.helper.ContextPathServletAdaptor;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.*;
 import org.osgi.service.http.HttpService;
+import org.wso2.carbon.identity.governance.IdentityGovernanceService;
+import org.wso2.carbon.identity.governance.common.IdentityConnectorConfig;
+import org.wso2.hibp.connector.HIBPConnectorConfig;
 import org.wso2.hibp.connector.HIBPServlet;
 
 import javax.servlet.Servlet;
@@ -35,9 +38,9 @@ import static org.wso2.hibp.connector.util.Constants.HIBP_SERVLET_PATH;
  */
 @Component(name = "org.wso2.hibp.connector",
         immediate = true)
-public class HIPServiceComponent {
+public class HIBPServiceComponent {
 
-    private static Log log = LogFactory.getLog(HIPServiceComponent.class);
+    private static Log log = LogFactory.getLog(HIBPServiceComponent.class);
     private HttpService httpService;
 
     @Activate
@@ -48,11 +51,14 @@ public class HIPServiceComponent {
 
         try {
             httpService.registerServlet(HIBP_SERVLET_PATH, commonAuthServlet, null, null);
+
+            IdentityConnectorConfig connectorConfig = new HIBPConnectorConfig();
+            context.getBundleContext().registerService(IdentityConnectorConfig.class, connectorConfig, null);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to register /hibp servlet.", e);
+            throw new RuntimeException("Failed to start HIBP component.", e);
         }
 
-        log.info("/hibp servlet registered successfully.");
+        log.info("Successfully stated HIBP compoenent.");
     }
 
     @Reference(
@@ -78,5 +84,21 @@ public class HIPServiceComponent {
         }
 
         this.httpService = null;
+    }
+
+    @Reference(
+            name = "IdentityGovernanceService",
+            service = org.wso2.carbon.identity.governance.IdentityGovernanceService.class,
+            cardinality = ReferenceCardinality.MANDATORY,
+            policy = ReferencePolicy.DYNAMIC,
+            unbind = "unsetIdentityGovernanceService")
+    protected void setIdentityGovernanceService(IdentityGovernanceService identityGovernanceService) {
+
+        HIBPDataHolder.getInstance().setIdentityGovernanceService(identityGovernanceService);
+    }
+
+    protected void unsetIdentityGovernanceService(IdentityGovernanceService identityGovernanceService) {
+
+        HIBPDataHolder.getInstance().setIdentityGovernanceService(null);
     }
 }

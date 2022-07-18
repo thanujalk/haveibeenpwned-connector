@@ -29,6 +29,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
+import org.wso2.carbon.identity.application.common.model.Property;
+import org.wso2.carbon.identity.governance.IdentityGovernanceException;
+import org.wso2.hibp.connector.internal.HIBPDataHolder;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
@@ -63,9 +66,9 @@ public class Utils {
         }
     }
 
-    public static Map<String, Integer> getHIBPAppearanceMap(String firstFiveLettersOfHash) throws Exception {
+    public static Map<String, Integer> getHIBPAppearanceMap(String apiKey, String firstFiveLettersOfHash) throws Exception {
 
-        Header apiKeyHeader = new BasicHeader(HIBP_API_KEY_HEADER, "TODO");
+        Header apiKeyHeader = new BasicHeader(HIBP_API_KEY_HEADER, apiKey);
         List<Header> headers = new ArrayList<>();
         headers.add(apiKeyHeader);
 
@@ -104,6 +107,19 @@ public class Utils {
             }
         }
         return responseMap;
+    }
+
+    public static Property[] getConnectorConfiguration(String tenantDomain) throws Exception {
+
+        Property[] connectorConfigs;
+        try {
+            connectorConfigs =
+                    HIBPDataHolder.getInstance().getIdentityGovernanceService().getConfiguration(new String[]{
+                            CONNECTOR_ENABLE, CONNECTOR_API_KEY}, tenantDomain);
+        } catch (IdentityGovernanceException e) {
+            throw new Exception("Failed to load connector configurations.", e);
+        }
+        return connectorConfigs;
     }
 
 }

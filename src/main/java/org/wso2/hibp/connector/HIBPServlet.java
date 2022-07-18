@@ -21,8 +21,9 @@ package org.wso2.hibp.connector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.hibp.connector.util.Utils;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.hibp.connector.util.Constants;
+import org.wso2.hibp.connector.util.Utils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -58,10 +59,17 @@ public class HIBPServlet extends HttpServlet {
             return;
         }
 
+        String tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
+        if (!StringUtils.isBlank(request.getParameter(Constants.TENANT_DOMAIN))) {
+            //TODO Validate tenant
+            tenantDomain = request.getParameter(Constants.TENANT_DOMAIN);
+        }
+
         // Get appearance count
         int passwordAppearanceCount;
         try {
-            passwordAppearanceCount = HIBPService.getPasswordAppearanceCount(request.getParameter(Constants.PASSWORD_PARAM));
+            passwordAppearanceCount =
+                    HIBPService.getPasswordAppearanceCount(request.getParameter(Constants.PASSWORD_PARAM), tenantDomain);
         } catch (Exception e) {
             LOG.error("Failed to get appearance count for the password.", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

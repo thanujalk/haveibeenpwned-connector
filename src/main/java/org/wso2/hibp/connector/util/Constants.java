@@ -37,4 +37,12 @@ public class Constants {
 
     public static final String HIBP_SERVLET_PATH = "/hibp";
 
+    public static final String CONNECTOR_NAME = "hibp.password.validator";
+
+    public static final String CONNECTOR_ENABLE = CONNECTOR_NAME + ".enable";
+
+    public static final String CONNECTOR_API_KEY = CONNECTOR_NAME + ".api.key";
+
+    public static final String TENANT_DOMAIN = "tenant_domain";
+
 }

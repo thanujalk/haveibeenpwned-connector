@@ -18,6 +18,8 @@
 
 package org.wso2.hibp.connector;
 
+import org.apache.commons.lang.StringUtils;
+import org.wso2.carbon.identity.application.common.model.Property;
 import org.wso2.hibp.connector.util.Utils;
 
 import java.util.Map;
@@ -34,13 +36,23 @@ public class HIBPService {
      * @return appearance count.
      * @throws Exception in case of failure.
      */
-    public static int getPasswordAppearanceCount(String password) throws Exception {
+    public static int getPasswordAppearanceCount(String password, String tenantDomain) throws Exception {
+
+        Property[] connectorConfigs = Utils.getConnectorConfiguration(tenantDomain);
+
+        // Connector is not enabled
+        if (connectorConfigs == null || connectorConfigs.length != 2
+                || !Boolean.parseBoolean(connectorConfigs[0].getValue())
+                || StringUtils.isBlank(connectorConfigs[1].getValue())) {
+            return 0;
+        }
 
         String passwordHash = Utils.getSHA1(password);
         String firstFiveLettersOfHash = passwordHash.substring(0, 5);
         String remainingLettersOfHash = passwordHash.substring(5);
 
-        Map<String, Integer> appearanceMap = Utils.getHIBPAppearanceMap(firstFiveLettersOfHash);
+        Map<String, Integer> appearanceMap = Utils.getHIBPAppearanceMap(connectorConfigs[1].getValue(),
+                firstFiveLettersOfHash);
         if (appearanceMap.isEmpty() || !appearanceMap.containsKey(remainingLettersOfHash)) {
             return 0;
         }
