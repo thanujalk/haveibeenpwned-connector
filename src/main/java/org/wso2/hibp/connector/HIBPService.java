@@ -58,4 +58,23 @@ public class HIBPService {
         }
         return appearanceMap.get(remainingLettersOfHash);
     }
+
+    /**
+     * Check HIBP enabled
+     *
+     * @param tenantDomain tenant domain
+     * @return true if enabled
+     * @throws Exception
+     */
+    public static boolean isHIBPEnabled(String tenantDomain) throws Exception {
+
+        Property[] connectorConfigs = Utils.getConnectorConfiguration(tenantDomain);
+
+        // Connector is not enabled
+        if (connectorConfigs == null || connectorConfigs.length != 2) {
+            return false;
+        }
+
+        return Boolean.parseBoolean(connectorConfigs[0].getValue());
+    }
 }

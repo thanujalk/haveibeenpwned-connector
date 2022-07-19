@@ -29,6 +29,8 @@ public class Constants {
 
     public static final String COUNT_PARAM = "count";
 
+    public static final String ENABLED_PARAM = "enabled";
+
     public static final String SHA1 = "SHA-1";
 
     public static final String HIBP_API_KEY_HEADER = "hibp-api-key";

@@ -54,6 +54,13 @@ public class Utils {
         return new Gson().toJson(jsonObject);
     }
 
+    public static String buildStatusResponse(boolean isEnabled) {
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(ENABLED_PARAM, isEnabled);
+        return new Gson().toJson(jsonObject);
+    }
+
     public static String getSHA1(String value) throws Exception {
 
         try {

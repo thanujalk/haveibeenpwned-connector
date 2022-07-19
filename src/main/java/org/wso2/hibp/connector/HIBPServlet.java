@@ -46,7 +46,31 @@ public class HIBPServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        doPost(request, response);
+        String tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
+        if (!StringUtils.isBlank(request.getParameter(Constants.TENANT_DOMAIN))) {
+            //TODO Validate tenant
+            tenantDomain = request.getParameter(Constants.TENANT_DOMAIN);
+        }
+
+        // Get HIBP connector status
+        boolean isEnabled;
+        try {
+            isEnabled = HIBPService.isHIBPEnabled(tenantDomain);
+        } catch (Exception e) {
+            LOG.error("Failed to get status of HIBP connector.", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        // Build response
+        String responseString = Utils.buildStatusResponse(isEnabled);
+
+        // Send response
+        response.setContentType(Constants.APPLICATION_JSON);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        PrintWriter out = response.getWriter();
+        out.print(responseString);
+        out.flush();
     }
 
     @Override
