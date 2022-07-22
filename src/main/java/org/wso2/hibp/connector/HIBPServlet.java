@@ -49,7 +49,7 @@ public class HIBPServlet extends HttpServlet {
         String tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
         if (!StringUtils.isBlank(request.getParameter(Constants.TENANT_DOMAIN))) {
             //TODO Validate tenant
-            tenantDomain = request.getParameter(Constants.TENANT_DOMAIN);
+            tenantDomain = request.getParameter(Constants.TENANT_DOMAIN).trim();
         }
 
         // Get HIBP connector status
@@ -86,7 +86,7 @@ public class HIBPServlet extends HttpServlet {
         String tenantDomain = MultitenantConstants.SUPER_TENANT_DOMAIN_NAME;
         if (!StringUtils.isBlank(request.getParameter(Constants.TENANT_DOMAIN))) {
             //TODO Validate tenant
-            tenantDomain = request.getParameter(Constants.TENANT_DOMAIN);
+            tenantDomain = request.getParameter(Constants.TENANT_DOMAIN).trim();
         }
 
         // Get appearance count
